@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 )
 
 var BASE_URL = "https://pokeapi.co/api/v2/"
@@ -38,12 +41,19 @@ type PokemonStat struct {
 }
 
 func main() {
-	fetchById("bulbasaur")
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter seach term: ")
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+	fetchById(strings.TrimSpace(text))
 
 }
 
 // Takes either an ID or name
-func fetchById[T interface{ ~int | ~string }](searchTerm T) {
+func fetchById(searchTerm string) {
+	fmt.Println(searchTerm)
 	res, err := http.Get(fmt.Sprintf("%s/pokemon/%v", BASE_URL, searchTerm))
 	if err != nil {
 		log.Fatal(err)
