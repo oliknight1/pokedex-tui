@@ -38,12 +38,13 @@ type PokemonStat struct {
 }
 
 func main() {
-	fetchById(1)
+	fetchById("bulbasaur")
 
 }
 
-func fetchById(id int) {
-	res, err := http.Get(fmt.Sprintf("%s/pokemon/%d", BASE_URL, id))
+// Takes either an ID or name
+func fetchById[T interface{ ~int | ~string }](searchTerm T) {
+	res, err := http.Get(fmt.Sprintf("%s/pokemon/%v", BASE_URL, searchTerm))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,16 +60,20 @@ func fetchById(id int) {
 
 	var responseObj Pokemon
 	json.Unmarshal(data, &responseObj)
-	fmt.Println(responseObj.Name)
-	fmt.Println(responseObj.ID)
-	fmt.Println("Weight: ", responseObj.Weight)
+	printData(responseObj)
+}
+
+func printData(pokemon Pokemon) {
+	fmt.Println(pokemon.Name)
+	fmt.Println(pokemon.ID)
+	fmt.Println("Weight: ", pokemon.Weight)
 
 	fmt.Println("Types:")
-	for _, t := range responseObj.Types {
+	for _, t := range pokemon.Types {
 		fmt.Println(t.Type.Name)
 	}
 	fmt.Println("Stats:")
-	for _, s := range responseObj.Stats {
+	for _, s := range pokemon.Stats {
 		fmt.Println(s.Stat.Name, s.BaseStat)
 	}
 
